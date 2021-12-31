@@ -33,7 +33,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   //   data: { loginToken: null, loginTokenExpiresAt: null },
   // });
 
-  return redirect("/~", {
+  return redirect("/home", {
     headers: {
       "set-cookie": await commitSession(session),
     },

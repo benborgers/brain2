@@ -8,7 +8,7 @@ const redirectIfNecessary = async (
   const user = await getCurrentUser(request);
 
   if (user && !authenticatedPage) {
-    throw redirect("/~");
+    throw redirect("/home");
   }
 
   if (!user && authenticatedPage) {

@@ -4,7 +4,7 @@ import type { ActionFunction } from "remix";
 import prisma from "~/lib/prisma.server";
 import { DateTime } from "luxon";
 import sendEmail from "~/lib/sendEmail.server";
-import redirectIfNecessary from "~/lib/redirectIfNecessary";
+import redirectIfNecessary from "~/lib/redirectIfNecessary.server";
 
 export const loader: LoaderFunction = async ({ request }) => {
   await redirectIfNecessary(request, false);
