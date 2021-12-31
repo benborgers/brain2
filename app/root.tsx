@@ -4,13 +4,19 @@ import {
   Meta,
   Outlet,
   Scripts,
-  ScrollRestoration
+  ScrollRestoration,
 } from "remix";
-import type { MetaFunction } from "remix";
+import type { MetaFunction, LinksFunction } from "remix";
 
 export const meta: MetaFunction = () => {
-  return { title: "New Remix App" };
+  return { title: "Brain" };
 };
+
+import tailwindStyles from "~/styles/tailwind-build.css";
+export const links: LinksFunction = () => [
+  { rel: "icon", href: "https://emojicdn.elk.sh/🧠" },
+  { rel: "stylesheet", href: tailwindStyles },
+];
 
 export default function App() {
   return (
@@ -21,7 +27,7 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="bg-zinc-50 p-4 pb-24">
         <Outlet />
         <ScrollRestoration />
         <Scripts />
