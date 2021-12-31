@@ -1,17 +1,18 @@
 import { redirect } from "remix";
-import getCurrentUser from "~/lib/getCurrentUser.server";
+import { getSession } from "./sessions.server";
 
 const redirectIfNecessary = async (
   request: Request,
   authenticatedPage: boolean
 ) => {
-  const user = await getCurrentUser(request);
+  const session = await getSession(request.headers.get("cookie"));
+  const userId = session.get("userId");
 
-  if (user && !authenticatedPage) {
+  if (userId && !authenticatedPage) {
     throw redirect("/home");
   }
 
-  if (!user && authenticatedPage) {
+  if (!userId && authenticatedPage) {
     throw redirect("/");
   }
 };

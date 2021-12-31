@@ -15,6 +15,22 @@ model User {
   email String @unique
   loginToken String?
   loginTokenExpiresAt DateTime?
+
+  notecards Notecard[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Notecard {
+  id String @id @default(cuid())
+  title String?
+  body String?
+  tags String[]
+
+  user User @relation(fields: [userId], references: [id])
+  userId String
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
