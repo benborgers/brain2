@@ -25,6 +25,14 @@ export const loader: LoaderFunction = async ({ request }) => {
   const session = await getSession(request.headers.get("cookie"));
   session.set("userId", user.id);
 
+  /* We could wipe the login token once it's used once,
+      but I suspect that people will click the link on
+      the wrong device and need to use it again. */
+  // await prisma.user.update({
+  //   where: { id: user.id },
+  //   data: { loginToken: null, loginTokenExpiresAt: null },
+  // });
+
   return redirect("/~", {
     headers: {
       "set-cookie": await commitSession(session),
