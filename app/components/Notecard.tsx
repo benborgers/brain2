@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, MouseEventHandler } from "react";
 import { Form, useFetcher } from "remix";
-import { CheckIcon, PencilIcon, TrashIcon } from "@heroicons/react/outline";
+import { CheckIcon, PencilIcon } from "@heroicons/react/outline";
 import NotecardType from "~/types/Notecard";
 
 type Props = {
@@ -108,9 +108,8 @@ const Notecard: React.FC<Props> = ({ notecard }) => {
               replace
               onSubmit={() => setDeleted(true)}
             >
-              <button className="flex items-center gap-x-2 bg-rose-100 text-rose-600 px-3 py-1 rounded-lg">
-                <TrashIcon className="h-4 w-4" />
-                <span className="text-sm font-semibold">Junk</span>
+              <button className="text-rose-600">
+                <span className="text-sm font-semibold">Send to Junk</span>
               </button>
             </Form>
           </div>
