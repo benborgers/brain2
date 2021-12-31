@@ -27,6 +27,7 @@ model Notecard {
   title String?
   body String?
   tags String[]
+  deleted Boolean @default(false)
 
   user User @relation(fields: [userId], references: [id])
   userId String

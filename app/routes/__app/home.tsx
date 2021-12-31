@@ -13,6 +13,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   const notecards: Array<NotecardType> = await prisma.notecard.findMany({
     where: {
       user: { id: userId },
+      deleted: false,
     },
     orderBy: { updatedAt: "desc" },
   });
@@ -36,18 +37,16 @@ export const action: ActionFunction = async ({ request }) => {
   return json({ createdNotecard });
 };
 
-export default function Tilde() {
+export default function Home() {
   const loaderData = useLoaderData();
   const [data, setData] = useState(loaderData);
   useEffect(() => setData(loaderData), [loaderData]);
 
-  const [editingId, setEditingId] = useState<string | null>(null);
-
+  // We keep track of the order separately, so the notecards
+  // don't reorder themselves as we type.
   const [order, setOrder] = useState<Array<string>>(
     data.notecards.map((notecard: NotecardType) => notecard.id)
   );
-
-  const [pendingNotecards, setPendingNotecards] = useState(0);
 
   const actionData = useActionData();
 
@@ -55,35 +54,29 @@ export default function Tilde() {
     if (actionData?.createdNotecard) {
       const clone = [actionData.createdNotecard.id, ...order];
       setOrder(clone);
-      setPendingNotecards(0);
     }
   }, [actionData]);
 
   const transition = useTransition();
 
-  useEffect(() => {
-    if (transition.state === "submitting") {
-      setPendingNotecards((i) => i + 1);
-    }
-  }, [transition]);
-
   return (
     <>
       <Form method="post">
+        <input name="_action" value="create" type="hidden" />
         <button className="grid grid-cols-[max-content,1fr] items-center gap-x-1 bg-rose-100 text-rose-600 px-3 py-1.5 rounded-lg">
-          <PlusSmIcon className="h-5 w-5" />
-          <span className="text-sm font-semibold">New Card</span>
+          {transition.state === "submitting" &&
+          transition?.submission.formData.get("_action") === "create" ? (
+            <span className="text-sm font-semibold">Loading...</span>
+          ) : (
+            <>
+              <PlusSmIcon className="h-5 w-5" />
+              <span className="text-sm font-semibold">New Card</span>
+            </>
+          )}
         </button>
       </Form>
 
       <div className="mt-6 space-y-4">
-        {new Array(pendingNotecards).fill(null).map((_, index) => (
-          <section
-            key={index}
-            className="bg-zinc-200 h-16 rounded-xl animate-pulse"
-          />
-        ))}
-
         {order.map((id) => {
           const notecard: NotecardType = data.notecards.find(
             (n: NotecardType) => n.id === id
@@ -94,18 +87,12 @@ export default function Tilde() {
           }
 
           return (
-            <Notecard
+            <div
               key={notecard.id}
-              notecard={notecard}
-              editing={editingId === notecard.id}
-              setEditing={(editing) => {
-                if (editing) {
-                  setEditingId(notecard.id);
-                } else {
-                  setEditingId(null);
-                }
-              }}
-            />
+              onClick={() => console.log("active notecard", notecard)}
+            >
+              <Notecard notecard={notecard} />
+            </div>
           );
         })}
       </div>

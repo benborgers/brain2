@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useRef, MouseEventHandler } from "react";
-import { useFetcher } from "remix";
-import { CheckIcon, PencilIcon } from "@heroicons/react/outline";
+import { Form, useFetcher } from "remix";
+import { CheckIcon, PencilIcon, TrashIcon } from "@heroicons/react/outline";
 import NotecardType from "~/types/Notecard";
 
 type Props = {
-  editing: boolean;
-  setEditing: (editing: boolean) => void;
   notecard: NotecardType;
 };
 
-const Notecard: React.FC<Props> = ({ editing, setEditing, notecard }) => {
+const Notecard: React.FC<Props> = ({ notecard }) => {
+  const [editing, setEditing] = useState(false);
+
   const titleRef = useRef<HTMLInputElement>(null);
   const bodyRef = useRef<HTMLTextAreaElement>(null);
 
@@ -64,6 +64,12 @@ const Notecard: React.FC<Props> = ({ editing, setEditing, notecard }) => {
     }, 500);
   }, [title, body]);
 
+  const [deleted, setDeleted] = useState(notecard.deleted);
+
+  if (deleted) {
+    return null;
+  }
+
   return (
     <section className="bg-white rounded-xl border border-zinc-200 p-4">
       {editing ? (
@@ -94,6 +100,20 @@ const Notecard: React.FC<Props> = ({ editing, setEditing, notecard }) => {
               setBody(e.target.value);
             }}
           />
+
+          <div className="mt-4">
+            <Form
+              method="delete"
+              action={`/notecards/${notecard.id}`}
+              replace
+              onSubmit={() => setDeleted(true)}
+            >
+              <button className="flex items-center gap-x-2 bg-rose-100 text-rose-600 px-3 py-1 rounded-lg">
+                <TrashIcon className="h-4 w-4" />
+                <span className="text-sm font-semibold">Junk</span>
+              </button>
+            </Form>
+          </div>
         </>
       ) : (
         <>
@@ -127,6 +147,7 @@ const StateButton: React.FC<{ onClick: MouseEventHandler }> = ({
     <button
       onClick={onClick}
       className="bg-zinc-100 text-zinc-500 hover:bg-zinc-200 hover:text-zinc-800 transition-colors duration-200 p-1.5 rounded-full"
+      tabIndex={-1}
     >
       {children}
     </button>

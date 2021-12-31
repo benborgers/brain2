@@ -1,4 +1,4 @@
-import { ActionFunction } from "remix";
+import { ActionFunction, redirect } from "remix";
 import getCurrentUserId from "~/lib/getCurrentUserId.server";
 import prisma from "~/lib/prisma.server";
 
@@ -20,6 +20,19 @@ export const action: ActionFunction = async ({ request, params }) => {
       });
 
       return null;
+    }
+    case "DELETE": {
+      await prisma.notecard.updateMany({
+        where: {
+          id: params.id,
+          user: { id: userId },
+        },
+        data: {
+          deleted: true,
+        },
+      });
+
+      return redirect("/home");
     }
   }
 };
