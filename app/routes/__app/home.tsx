@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { Form, json, LoaderFunction, useLoaderData } from "remix";
-import type { ActionFunction } from "remix";
+import { Form, json, useLoaderData, useActionData, useTransition } from "remix";
+import type { LoaderFunction, ActionFunction } from "remix";
 import { PlusSmIcon } from "@heroicons/react/solid";
 import getCurrentUserId from "~/lib/getCurrentUserId.server";
 import prisma from "~/lib/prisma.server";
@@ -26,14 +26,14 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export const action: ActionFunction = async ({ request }) => {
   const userId = await getCurrentUserId(request);
-  await prisma.notecard.create({
+  const createdNotecard = await prisma.notecard.create({
     data: {
       user: {
         connect: { id: userId },
       },
     },
   });
-  return null;
+  return json({ createdNotecard });
 };
 
 export default function Tilde() {
@@ -42,6 +42,30 @@ export default function Tilde() {
   useEffect(() => setData(loaderData), [loaderData]);
 
   const [editingId, setEditingId] = useState<string | null>(null);
+
+  const [order, setOrder] = useState<Array<string>>(
+    data.notecards.map((notecard: NotecardType) => notecard.id)
+  );
+
+  const [pendingNotecards, setPendingNotecards] = useState(0);
+
+  const actionData = useActionData();
+
+  useEffect(() => {
+    if (actionData?.createdNotecard) {
+      const clone = [actionData.createdNotecard.id, ...order];
+      setOrder(clone);
+      setPendingNotecards(0);
+    }
+  }, [actionData]);
+
+  const transition = useTransition();
+
+  useEffect(() => {
+    if (transition.state === "submitting") {
+      setPendingNotecards((i) => i + 1);
+    }
+  }, [transition]);
 
   return (
     <>
@@ -53,20 +77,37 @@ export default function Tilde() {
       </Form>
 
       <div className="mt-6 space-y-4">
-        {data.notecards.map((notecard: NotecardType) => (
-          <Notecard
-            key={notecard.id}
-            notecard={notecard}
-            editing={editingId === notecard.id}
-            setEditing={(editing) => {
-              if (editing) {
-                setEditingId(notecard.id);
-              } else {
-                setEditingId(null);
-              }
-            }}
+        {new Array(pendingNotecards).fill(null).map((_, index) => (
+          <section
+            key={index}
+            className="bg-zinc-200 h-16 rounded-xl animate-pulse"
           />
         ))}
+
+        {order.map((id) => {
+          const notecard: NotecardType = data.notecards.find(
+            (n: NotecardType) => n.id === id
+          );
+
+          if (!notecard) {
+            return null;
+          }
+
+          return (
+            <Notecard
+              key={notecard.id}
+              notecard={notecard}
+              editing={editingId === notecard.id}
+              setEditing={(editing) => {
+                if (editing) {
+                  setEditingId(notecard.id);
+                } else {
+                  setEditingId(null);
+                }
+              }}
+            />
+          );
+        })}
       </div>
     </>
   );
