@@ -7,6 +7,7 @@ import prisma from "~/lib/prisma.server";
 import markdown from "~/lib/markdown.server";
 import Notecard from "~/components/Notecard";
 import NotecardType from "~/types/Notecard";
+import { motion } from "framer-motion";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const userId = await getCurrentUserId(request);
@@ -87,12 +88,14 @@ export default function Home() {
           }
 
           return (
-            <div
+            <motion.div
+              layout
+              transition={{ type: "spring", duration: 0.4 }}
               key={notecard.id}
               onClick={() => console.log("active notecard", notecard)}
             >
               <Notecard notecard={notecard} />
-            </div>
+            </motion.div>
           );
         })}
       </div>
