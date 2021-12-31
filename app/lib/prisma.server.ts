@@ -1,5 +1,9 @@
+// @ts-nocheck
+
 import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient();
+if (!global.prisma_client) {
+  global.prisma_client = new PrismaClient();
+}
 
-export default prisma;
+export default global.prisma_client;

@@ -8,7 +8,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function AppLayout() {
   return (
-    <div>
+    <div className="max-w-screen-sm mx-auto sm:mt-4">
       <Outlet />
     </div>
   );
