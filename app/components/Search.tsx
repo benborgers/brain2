@@ -150,7 +150,9 @@ export default function Search() {
                       // For scrolling to active result.
                       data-result-id={notecard.id}
                     >
-                      <p className="text-zinc-300 text-lg">{notecard.title}</p>
+                      <p className="text-zinc-300 text-lg">
+                        {notecard.title || "Untitled"}
+                      </p>
                     </Link>
                   );
                 })}
