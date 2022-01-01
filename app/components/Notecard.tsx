@@ -129,15 +129,19 @@ const Notecard: React.FC<Props> = ({ notecard, activeId }) => {
 
   const TRUNCATION_MAX_HEIGHT = 350;
 
-  const [truncated, setTruncated] = useState(false);
+  const [showMore, setShowMore] = useState<boolean | null>(null);
 
   useEffect(() => {
     if (!editing && bodyHtmlRef.current) {
       const height = bodyHtmlRef.current.offsetHeight;
       if (height > TRUNCATION_MAX_HEIGHT) {
-        setTruncated(true);
+        // This check makes sure that we don't re-truncate after
+        // the user has already clicked "show more" but then edited.
+        if (showMore !== true) {
+          setShowMore(false);
+        }
       } else {
-        setTruncated(false);
+        setShowMore(null);
       }
     }
   }, [editing, notecard.bodyHtml]);
@@ -218,17 +222,18 @@ const Notecard: React.FC<Props> = ({ notecard, activeId }) => {
                 dangerouslySetInnerHTML={{ __html: notecard.bodyHtml }}
                 className="mt-2 prose prose-zinc overflow-hidden"
                 animate={{
-                  height: truncated ? TRUNCATION_MAX_HEIGHT - 50 : "auto",
+                  height:
+                    showMore === false ? TRUNCATION_MAX_HEIGHT - 50 : "auto",
                 }}
                 transition={{ type: "tween", duration: 0.1 }}
                 ref={bodyHtmlRef}
               />
 
-              {truncated && (
+              {showMore === false && (
                 <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-white/0 to-white flex justify-center items-end">
                   <button
                     className="text-sm text-zinc-500 font-semibold"
-                    onClick={() => setTruncated(false)}
+                    onClick={() => setShowMore(true)}
                   >
                     See More
                   </button>
