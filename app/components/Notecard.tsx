@@ -31,15 +31,15 @@ const Notecard: React.FC<Props> = ({ notecard, activeId }) => {
 
   useEffect(() => {
     if (editing) {
-      if (body) {
+      if (!title) {
+        titleRef.current?.focus();
+      } else {
         bodyRef.current?.focus();
         // Set cursor to end.
         bodyRef.current?.setSelectionRange(
           bodyRef.current.value.length,
           bodyRef.current.value.length
         );
-      } else {
-        titleRef.current?.focus();
       }
     }
   }, [editing]);
