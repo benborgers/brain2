@@ -1,14 +1,22 @@
 import { useState, useEffect, useRef } from "react";
-import { Form, json, useLoaderData, useActionData, useTransition } from "remix";
+import {
+  Form,
+  json,
+  useLoaderData,
+  useActionData,
+  useTransition,
+  Link,
+} from "remix";
 import type { LoaderFunction, ActionFunction } from "remix";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import tinykeys from "tinykeys";
-import { PlusSmIcon } from "@heroicons/react/solid";
+import { PlusSmIcon, ArrowLeftIcon } from "@heroicons/react/solid";
 import getCurrentUserId from "~/lib/getCurrentUserId.server";
 import prisma from "~/lib/prisma.server";
 import markdown from "~/lib/markdown.server";
 import NotecardType from "~/types/Notecard";
 import Notecard from "~/components/Notecard";
+import { DateTime } from "luxon";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const userId = await getCurrentUserId(request);
@@ -31,7 +39,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     notecard.bodyHtml = markdown(notecard.body || "");
   });
 
-  return json({ notecards });
+  return json({ notecards, tag });
 };
 
 export const action: ActionFunction = async ({ request }) => {
@@ -84,9 +92,38 @@ export default function Home() {
     return unsubscribe;
   });
 
+  const now = DateTime.now();
+
   return (
     <>
-      <div className="flex justify-end">
+      <div className="flex justify-between items-end">
+        <div>
+          <AnimatePresence>
+            {data.tag && (
+              <motion.div
+                className="flex items-center gap-x-4"
+                initial={{ opacity: 0, x: -4 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -4 }}
+                transition={{ type: "spring", duration: 0.2 }}
+              >
+                <Link
+                  to="/home"
+                  prefetch="intent"
+                  className="block bg-zinc-200 p-1 rounded-full"
+                >
+                  <ArrowLeftIcon className="h-4 w-4" />
+                </Link>
+
+                <p className="text-xl font-bold text-zinc-900">
+                  <span className="text-rose-500 mr-0.5">#</span>
+                  {data.tag}
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
         <Form method="post">
           <input name="_action" value="create" type="hidden" />
           <button
