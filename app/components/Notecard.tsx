@@ -79,8 +79,13 @@ const Notecard: React.FC<Props> = ({ notecard, activeId = null }) => {
 
   const [title, setTitle] = useState(notecard.title || "");
   const [body, setBody] = useState(notecard.body || "");
-  useEffect(() => setTitle(notecard.title || ""), [notecard.title]);
-  useEffect(() => setBody(notecard.body || ""), [notecard.body]);
+  // When navigating from one /notecard/$id page to another,
+  // the ID doesn't get updated because the underlying component
+  //  stays the same (I think?). This makes sure it updates.
+  useEffect(() => {
+    setTitle(notecard.title || "");
+    setBody(notecard.body || "");
+  }, [notecard.id]);
 
   const fetcher = useFetcher();
   const firstRun = useRef(true);
