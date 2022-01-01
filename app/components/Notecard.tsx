@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, MouseEventHandler } from "react";
 import { Form, useFetcher, useNavigate } from "remix";
 import tinykeys from "tinykeys";
+import { motion } from "framer-motion";
 import { CheckIcon, PencilIcon } from "@heroicons/react/outline";
 import NotecardType from "~/types/Notecard";
 
@@ -124,6 +125,23 @@ const Notecard: React.FC<Props> = ({ notecard, activeId }) => {
 
   globalActiveId = activeId;
 
+  /* TRUNCATE NOTECARD IF IT'S TOO LONG */
+
+  const TRUNCATION_MAX_HEIGHT = 350;
+
+  const [truncated, setTruncated] = useState(false);
+
+  useEffect(() => {
+    if (!editing && bodyHtmlRef.current) {
+      const height = bodyHtmlRef.current.offsetHeight;
+      if (height > TRUNCATION_MAX_HEIGHT) {
+        setTruncated(true);
+      } else {
+        setTruncated(false);
+      }
+    }
+  }, [editing, notecard.bodyHtml]);
+
   /* DELETING THIS NOTECARD */
 
   const [deleted, setDeleted] = useState(notecard.deleted);
@@ -195,11 +213,28 @@ const Notecard: React.FC<Props> = ({ notecard, activeId }) => {
           </div>
 
           {notecard.bodyHtml && (
-            <div
-              dangerouslySetInnerHTML={{ __html: notecard.bodyHtml }}
-              className="mt-2 prose prose-zinc"
-              ref={bodyHtmlRef}
-            />
+            <div className="relative">
+              <motion.div
+                dangerouslySetInnerHTML={{ __html: notecard.bodyHtml }}
+                className="mt-2 prose prose-zinc overflow-hidden"
+                animate={{
+                  height: truncated ? TRUNCATION_MAX_HEIGHT - 50 : "auto",
+                }}
+                transition={{ type: "tween" }}
+                ref={bodyHtmlRef}
+              />
+
+              {truncated && (
+                <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-white/0 to-white flex justify-center items-end">
+                  <button
+                    className="text-sm text-zinc-500 font-semibold"
+                    onClick={() => setTruncated(false)}
+                  >
+                    See More
+                  </button>
+                </div>
+              )}
+            </div>
           )}
         </>
       )}
