@@ -56,6 +56,7 @@ export default function Home() {
     if (actionData?.createdNotecard) {
       const clone = [actionData.createdNotecard.id, ...order];
       setOrder(clone);
+      setActiveId(actionData.createdNotecard.id);
     }
   }, [actionData]);
 
