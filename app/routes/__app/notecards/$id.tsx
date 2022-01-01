@@ -14,6 +14,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     where: {
       id: params.id,
       user: { id: userId },
+      deleted: false,
     },
   });
 

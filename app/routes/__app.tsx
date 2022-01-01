@@ -1,5 +1,6 @@
 import { LoaderFunction, LinksFunction, Outlet } from "remix";
 import redirectIfNecessary from "~/lib/redirectIfNecessary.server";
+import Search from "~/components/Search";
 
 export const links: LinksFunction = () => [
   {
@@ -15,8 +16,12 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function AppLayout() {
   return (
-    <div className="max-w-screen-sm mx-auto sm:mt-4">
-      <Outlet />
-    </div>
+    <>
+      <div className="max-w-screen-sm mx-auto sm:mt-4">
+        <Outlet />
+      </div>
+
+      <Search />
+    </>
   );
 }

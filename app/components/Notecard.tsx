@@ -13,7 +13,7 @@ type Props = {
   activeId?: string | null;
 };
 
-const Notecard: React.FC<Props> = ({ notecard, activeId }) => {
+const Notecard: React.FC<Props> = ({ notecard, activeId = null }) => {
   /* EDITING/VIEWING MODE */
   const [editing, setEditing] = useState(() => {
     // Editing mode by default on fresh notecards.
@@ -79,6 +79,8 @@ const Notecard: React.FC<Props> = ({ notecard, activeId }) => {
 
   const [title, setTitle] = useState(notecard.title || "");
   const [body, setBody] = useState(notecard.body || "");
+  useEffect(() => setTitle(notecard.title || ""), [notecard.title]);
+  useEffect(() => setBody(notecard.body || ""), [notecard.body]);
 
   const fetcher = useFetcher();
   const firstRun = useRef(true);
