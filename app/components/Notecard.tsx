@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, MouseEventHandler } from "react";
-import { Form, useFetcher } from "remix";
+import { Form, redirect, useFetcher } from "remix";
 import tinykeys from "tinykeys";
 import { CheckIcon, PencilIcon } from "@heroicons/react/outline";
 import NotecardType from "~/types/Notecard";
@@ -14,7 +14,15 @@ type Props = {
 };
 
 const Notecard: React.FC<Props> = ({ notecard, activeId }) => {
-  const [editing, setEditing] = useState(false);
+  /* EDITING/VIEWING MODE */
+  const [editing, setEditing] = useState(() => {
+    // Editing mode by default on fresh notecards.
+    if (!notecard.title && !notecard.body) {
+      return true;
+    }
+
+    return false;
+  });
 
   /* INPUTS: FOCUS AND RESIZING */
 
@@ -126,7 +134,7 @@ const Notecard: React.FC<Props> = ({ notecard, activeId }) => {
 
           <textarea
             placeholder="Type notes in markdown..."
-            className="mt-2.5 font-mono w-full p-0 border-none focus:ring-0 placeholder:text-zinc-400 resize-none"
+            className="h-6 mt-2.5 font-mono w-full p-0 border-none focus:ring-0 placeholder:text-zinc-400 resize-none"
             ref={bodyRef}
             value={body}
             onChange={(e) => {
