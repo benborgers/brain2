@@ -1,14 +1,22 @@
 import React, { useState, useEffect, useRef, MouseEventHandler } from "react";
 import { Form, useFetcher } from "remix";
+import tinykeys from "tinykeys";
 import { CheckIcon, PencilIcon } from "@heroicons/react/outline";
 import NotecardType from "~/types/Notecard";
 
+// For some reason, just using a prop doesn't work within the
+// tinykeys callback, so I'm using this hack.
+let globalActiveId: string | null;
+
 type Props = {
   notecard: NotecardType;
+  activeId: string | null;
 };
 
-const Notecard: React.FC<Props> = ({ notecard }) => {
+const Notecard: React.FC<Props> = ({ notecard, activeId }) => {
   const [editing, setEditing] = useState(false);
+
+  /* INPUTS: FOCUS AND RESIZING */
 
   const titleRef = useRef<HTMLInputElement>(null);
   const bodyRef = useRef<HTMLTextAreaElement>(null);
@@ -39,6 +47,8 @@ const Notecard: React.FC<Props> = ({ notecard }) => {
     if (editing) resize();
   }, [editing]);
 
+  /* WRITING DATA TO THE SERVER */
+
   const [title, setTitle] = useState(notecard.title || "");
   const [body, setBody] = useState(notecard.body || "");
 
@@ -63,6 +73,30 @@ const Notecard: React.FC<Props> = ({ notecard }) => {
       );
     }, 500);
   }, [title, body]);
+
+  /* KEYBOARD SHORTCUTS */
+
+  useEffect(() => {
+    const unsubscribe = tinykeys(window, {
+      "$mod+E": () => {
+        if (globalActiveId === notecard.id) {
+          setEditing(true);
+        }
+      },
+      "$mod+Enter": () => {
+        setEditing(false);
+      },
+      escape: () => {
+        setEditing(false);
+      },
+    });
+
+    return unsubscribe;
+  }, []);
+
+  globalActiveId = activeId;
+
+  /* DELETING THIS NOTECARD */
 
   const [deleted, setDeleted] = useState(notecard.deleted);
 

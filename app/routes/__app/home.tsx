@@ -1,13 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Form, json, useLoaderData, useActionData, useTransition } from "remix";
 import type { LoaderFunction, ActionFunction } from "remix";
+import { motion } from "framer-motion";
+import tinykeys from "tinykeys";
 import { PlusSmIcon } from "@heroicons/react/solid";
 import getCurrentUserId from "~/lib/getCurrentUserId.server";
 import prisma from "~/lib/prisma.server";
 import markdown from "~/lib/markdown.server";
-import Notecard from "~/components/Notecard";
 import NotecardType from "~/types/Notecard";
-import { motion } from "framer-motion";
+import Notecard from "~/components/Notecard";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const userId = await getCurrentUserId(request);
@@ -60,12 +61,30 @@ export default function Home() {
 
   const transition = useTransition();
 
+  const [activeId, setActiveId] = useState<string | null>(null);
+
+  /* KEYBOARD SHORTCUTS */
+
+  const newCardRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    const unsubscribe = tinykeys(window, {
+      "Shift+N": () => {
+        newCardRef.current?.click();
+      },
+    });
+
+    return unsubscribe;
+  });
+
   return (
     <>
       <div className="flex justify-end">
         <Form method="post">
           <input name="_action" value="create" type="hidden" />
-          <button className="grid grid-cols-[max-content,1fr] items-center gap-x-1 bg-rose-100 text-rose-600 px-3 py-1.5 rounded-lg">
+          <button
+            className="grid grid-cols-[max-content,1fr] items-center gap-x-1 bg-rose-100 text-rose-600 px-3 py-1.5 rounded-lg"
+            ref={newCardRef}
+          >
             {transition.state === "submitting" &&
             transition?.submission.formData.get("_action") === "create" ? (
               <span className="text-sm font-semibold">Loading...</span>
@@ -94,9 +113,9 @@ export default function Home() {
               layout
               transition={{ type: "spring", duration: 0.4 }}
               key={notecard.id}
-              onClick={() => console.log("active notecard", notecard)}
+              onMouseEnter={() => setActiveId(notecard.id)}
             >
-              <Notecard notecard={notecard} />
+              <Notecard notecard={notecard} activeId={activeId} />
             </motion.div>
           );
         })}
