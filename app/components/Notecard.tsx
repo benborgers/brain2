@@ -220,7 +220,7 @@ const Notecard: React.FC<Props> = ({ notecard, activeId }) => {
                 animate={{
                   height: truncated ? TRUNCATION_MAX_HEIGHT - 50 : "auto",
                 }}
-                transition={{ type: "tween" }}
+                transition={{ type: "tween", duration: 0.1 }}
                 ref={bodyHtmlRef}
               />
 
