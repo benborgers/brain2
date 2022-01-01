@@ -65,21 +65,30 @@ export default function Index() {
   }, [transition.state]);
 
   return (
-    <div>
-      <h1>Log in</h1>
-      {sent ? (
-        <p>Link sent! Check your email.</p>
-      ) : (
-        <Form method="post">
-          <input
-            name="email"
-            type="email"
-            placeholder="you@awesome.com"
-            required
-          />
-          <button>Send login link</button>
-        </Form>
-      )}
+    <div className="mt-[30vh] mx-auto w-64">
+      <h1 className="font-semibold text-xl text-zinc-900">Log in to Brain</h1>
+
+      <div className="mt-4">
+        {sent ? (
+          <p className="text-zinc-500">Link sent! Check your email.</p>
+        ) : (
+          <Form method="post" className="gap-4 space-y-4">
+            <input
+              name="email"
+              type="email"
+              placeholder="email address"
+              required
+              autoFocus
+              className="block w-full rounded-full px-4
+                border-zinc-200 focus:border-rose-500 focus:ring-rose-500 transition-colors duration-200
+                placeholder:text-zinc-500 text-zinc-900"
+            />
+            <button className="block px-4 py-2 bg-rose-100 text-rose-600 rounded-full font-medium">
+              Send login link
+            </button>
+          </Form>
+        )}
+      </div>
     </div>
   );
 }
