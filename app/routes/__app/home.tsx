@@ -62,20 +62,22 @@ export default function Home() {
 
   return (
     <>
-      <Form method="post">
-        <input name="_action" value="create" type="hidden" />
-        <button className="grid grid-cols-[max-content,1fr] items-center gap-x-1 bg-rose-100 text-rose-600 px-3 py-1.5 rounded-lg">
-          {transition.state === "submitting" &&
-          transition?.submission.formData.get("_action") === "create" ? (
-            <span className="text-sm font-semibold">Loading...</span>
-          ) : (
-            <>
-              <PlusSmIcon className="h-5 w-5" />
-              <span className="text-sm font-semibold">New Card</span>
-            </>
-          )}
-        </button>
-      </Form>
+      <div className="flex justify-end">
+        <Form method="post">
+          <input name="_action" value="create" type="hidden" />
+          <button className="grid grid-cols-[max-content,1fr] items-center gap-x-1 bg-rose-100 text-rose-600 px-3 py-1.5 rounded-lg">
+            {transition.state === "submitting" &&
+            transition?.submission.formData.get("_action") === "create" ? (
+              <span className="text-sm font-semibold">Loading...</span>
+            ) : (
+              <>
+                <PlusSmIcon className="h-5 w-5" />
+                <span className="text-sm font-semibold">New Card</span>
+              </>
+            )}
+          </button>
+        </Form>
+      </div>
 
       <div className="mt-6 space-y-4">
         {order.map((id) => {
