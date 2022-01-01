@@ -1,3 +1,5 @@
+import { TAG_REGEX } from "~/constants";
+
 import MarkdownIt from "markdown-it";
 const md = new MarkdownIt();
 
@@ -5,7 +7,7 @@ const md = new MarkdownIt();
 md.disable(["heading"]);
 
 const markdown = (input: string): string => {
-  return md.render(input);
+  return md.render(input).replace(TAG_REGEX, '<span data-tag="$1">#$1</span>');
 };
 
 export default markdown;

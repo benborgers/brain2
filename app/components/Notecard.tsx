@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, MouseEventHandler } from "react";
-import { Form, useFetcher } from "remix";
+import { Form, useFetcher, useNavigate } from "remix";
 import tinykeys from "tinykeys";
 import { CheckIcon, PencilIcon } from "@heroicons/react/outline";
 import NotecardType from "~/types/Notecard";
@@ -54,6 +54,22 @@ const Notecard: React.FC<Props> = ({ notecard, activeId }) => {
   useEffect(() => {
     if (editing) resize();
   }, [editing]);
+
+  /* TAGS */
+
+  const navigate = useNavigate();
+  const bodyHtmlRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!editing && bodyHtmlRef.current) {
+      bodyHtmlRef.current.querySelectorAll("[data-tag]").forEach((tag) => {
+        tag.classList.add("bg-amber-100", "text-zinc-900", "cursor-pointer");
+        tag.addEventListener("click", () => {
+          navigate(`?tag=${(tag as HTMLElement).dataset.tag}`);
+        });
+      });
+    }
+  }, [editing, notecard.bodyHtml]);
 
   /* WRITING DATA TO THE SERVER */
 
@@ -172,6 +188,7 @@ const Notecard: React.FC<Props> = ({ notecard, activeId }) => {
             <div
               dangerouslySetInnerHTML={{ __html: notecard.bodyHtml }}
               className="mt-2 prose prose-zinc"
+              ref={bodyHtmlRef}
             />
           )}
         </>

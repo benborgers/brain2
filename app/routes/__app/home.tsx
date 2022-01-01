@@ -12,10 +12,17 @@ import Notecard from "~/components/Notecard";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const userId = await getCurrentUserId(request);
+
+  const searchParams = new URLSearchParams(new URL(request.url).search);
+  const tag = searchParams.get("tag");
+
   const notecards: Array<NotecardType> = await prisma.notecard.findMany({
     where: {
-      user: { id: userId },
-      deleted: false,
+      ...{
+        user: { id: userId },
+        deleted: false,
+      },
+      ...(tag ? { tags: { has: tag } } : {}),
     },
     orderBy: { updatedAt: "desc" },
   });
