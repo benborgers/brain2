@@ -29,17 +29,21 @@ const Notecard: React.FC<Props> = ({ notecard, activeId }) => {
   const titleRef = useRef<HTMLInputElement>(null);
   const bodyRef = useRef<HTMLTextAreaElement>(null);
 
+  const focusBody = () => {
+    bodyRef.current?.focus();
+    // Set cursor to end.
+    bodyRef.current?.setSelectionRange(
+      bodyRef.current.value.length,
+      bodyRef.current.value.length
+    );
+  };
+
   useEffect(() => {
     if (editing) {
       if (!title) {
         titleRef.current?.focus();
       } else {
-        bodyRef.current?.focus();
-        // Set cursor to end.
-        bodyRef.current?.setSelectionRange(
-          bodyRef.current.value.length,
-          bodyRef.current.value.length
-        );
+        focusBody();
       }
     }
   }, [editing]);
@@ -141,6 +145,12 @@ const Notecard: React.FC<Props> = ({ notecard, activeId }) => {
               ref={titleRef}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  // Timeout so the enter key isn't double counted as a newline in the body.
+                  setTimeout(focusBody);
+                }
+              }}
             />
 
             <StateButton onClick={() => setEditing(false)}>
