@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, MouseEventHandler } from "react";
-import { Form, redirect, useFetcher } from "remix";
+import { Form, useFetcher } from "remix";
 import tinykeys from "tinykeys";
 import { CheckIcon, PencilIcon } from "@heroicons/react/outline";
 import NotecardType from "~/types/Notecard";
