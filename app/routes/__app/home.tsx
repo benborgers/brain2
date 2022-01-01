@@ -16,7 +16,6 @@ import prisma from "~/lib/prisma.server";
 import markdown from "~/lib/markdown.server";
 import NotecardType from "~/types/Notecard";
 import Notecard from "~/components/Notecard";
-import { DateTime } from "luxon";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const userId = await getCurrentUserId(request);
@@ -91,8 +90,6 @@ export default function Home() {
 
     return unsubscribe;
   });
-
-  const now = DateTime.now();
 
   return (
     <>

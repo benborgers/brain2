@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, MouseEventHandler } from "react";
-import { Form, useFetcher, useNavigate } from "remix";
+import { Link, Form, useFetcher, useNavigate } from "remix";
 import tinykeys from "tinykeys";
 import { CheckIcon, PencilIcon } from "@heroicons/react/outline";
 import NotecardType from "~/types/Notecard";
@@ -10,7 +10,7 @@ let globalActiveId: string | null;
 
 type Props = {
   notecard: NotecardType;
-  activeId: string | null;
+  activeId?: string | null;
 };
 
 const Notecard: React.FC<Props> = ({ notecard, activeId }) => {
@@ -107,7 +107,9 @@ const Notecard: React.FC<Props> = ({ notecard, activeId }) => {
   useEffect(() => {
     const unsubscribe = tinykeys(window, {
       "$mod+E": () => {
-        if (globalActiveId === notecard.id) {
+        if (!globalActiveId) {
+          setEditing(true);
+        } else if (globalActiveId === notecard.id) {
           setEditing(true);
         }
       },
@@ -185,9 +187,11 @@ const Notecard: React.FC<Props> = ({ notecard, activeId }) => {
       ) : (
         <>
           <div className="flex items-center justify-between gap-x-4">
-            <h1 className="font-semibold text-xl text-zinc-900">
-              {title || "Untitled"}
-            </h1>
+            <Link to={`/notecards/${notecard.id}`} prefetch="intent">
+              <h1 className="font-semibold text-xl text-zinc-900">
+                {title || "Untitled"}
+              </h1>
+            </Link>
 
             <StateButton onClick={() => setEditing(true)}>
               <PencilIcon className="h-3.5 w-3.5" />
