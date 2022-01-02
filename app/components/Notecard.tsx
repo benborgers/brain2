@@ -225,7 +225,7 @@ const StateButton: React.FC<{ onClick: MouseEventHandler }> = ({
   return (
     <button
       onClick={onClick}
-      className="bg-zinc-100 text-zinc-500 hover:bg-zinc-200 hover:text-zinc-800 transition-colors duration-200 p-1.5 rounded-full"
+      className="bg-zinc-100 text-zinc-500 p-1.5 rounded-full"
       tabIndex={-1}
     >
       {children}
